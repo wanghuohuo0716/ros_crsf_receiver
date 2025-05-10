@@ -1,7 +1,7 @@
 ## Description
 
 
-**ROS 2** package for receiving CRSF (RC channels values) packets over serial port (UART).
+**ROS 1** package for receiving CRSF (RC channels values) packets over serial port (UART).
 
 
 **CRSF protocol** packet format [description](https://github.com/crsf-wg/crsf/wiki/Message-Format).
@@ -36,7 +36,7 @@ cd ../..
 ```
 
 
-Let's assume that your ros 2 workspace localized at `~/row2_ws/`.
+Let's assume that your ros workspace localized at `~/ros_ws/`.
 
 
 ### 1. Clone package from git:
@@ -45,13 +45,13 @@ Let's assume that your ros 2 workspace localized at `~/row2_ws/`.
 cd ~/row2_ws/src
 
 # Types dependency package:
-git clone https://github.com/AndreyTulyakov/ros2_crsf_receiver.git
+git clone https://github.com/wanghuohuo0716/ros_crsf_receiver.git
 ```
 
 ### 2. Build
 
 ```bash
-cd ~/row2_ws
+cd ~/ros_ws
 
 colcon build --packages-select crsf_receiver_msg
 colcon build --packages-select crsf_receiver
@@ -60,7 +60,7 @@ colcon build --packages-select crsf_receiver
 ### 3. Re-source
 
 ```bash
-source ~/row2_ws/install/setup.bash
+source ~/ros_ws/devel/setup.bash
 ```
 
 ---
@@ -72,8 +72,12 @@ source ~/row2_ws/install/setup.bash
 
 ### Set up params:
 
+**!!note!!**: **normally the receiver baund rate is 420000, but linux cutcom etc serial software can't resovle so fast baund rate data, so you have to change the receiver buand rate to a lower baund rate, now I set the baund rate 115200 for easy test.**
+
+It's easy to set the receiver baund rate, don't worry!
+
 1. Serial device name: `device`, default is `/dev/ttyUSB0`
-2. Baud rate: `baud_rate`, default is `420000`
+2. Baud rate: `baud_rate`, default is `115200`
 3. Enable / Disable link statistics info: `link_stats`, default is `false`
 4. Receiver rate (hz): `receiver_rate`, default is `100`
 
@@ -82,10 +86,11 @@ source ~/row2_ws/install/setup.bash
 
 ```bash
 # Run Node with default parameters
-ros2 run crsf_receiver crsf_receiver_node
+source devel/setup.bash
+rosrun crsf_receiver crsf_receiver_node
 
 # Or setup and run Node with custom parameters values:
-ros2 run crsf_receiver crsf_receiver_node --ros-args -p "device:=/dev/serial0" -p baud_rate:=420000  -p link_stats:=true
+rosrun crsf_receiver crsf_receiver_node --ros-args -p "device:=/dev/serial0" -p baud_rate:=420000  -p link_stats:=true
 ```
 
 ### Check
@@ -94,13 +99,13 @@ After correct setup and running without errors you can check topics:
 
 ```bash
 # Check channels values
-ros2 topic echo /rc/channels
+rostopic echo /rc/channels
 
 # Check link statisics
-ros2 topic echo /rc/link
+rostopic echo /rc/link
 
 # Check receiver rate
-ros2 topic hz /rc/channels
+rostopic hz /rc/channels
 ```
 
 

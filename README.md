@@ -90,7 +90,7 @@ source devel/setup.bash
 rosrun crsf_receiver crsf_receiver_node
 
 # Or setup and run Node with custom parameters values:
-rosrun crsf_receiver crsf_receiver_node --ros-args -p "device:=/dev/serial0" -p baud_rate:=420000  -p link_stats:=true
+rosrun crsf_receiver crsf_receiver_node --ros-args -p "device:=/dev/serial0" -p baud_rate:=115200  -p link_stats:=true
 ```
 
 ### Check

@@ -122,3 +122,8 @@ rostopic hz /rc/channels
 - `downlink_rssi` - ( dBm * -1 )
 - `downlink_status` - Downlink package success rate / Link quality ( % )
 - `downlink_snr` - ( db )
+
+
+THANKS AndreyTulyakov who provide the [ros2 version](https://github.com/AndreyTulyakov/ros2_crsf_receiver)!
+
+This repo is modified from the [ros2 version](https://github.com/AndreyTulyakov/ros2_crsf_receiver)!

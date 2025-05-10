@@ -1,4 +1,5 @@
 #include "crsf_parser.h"
+#include <iostream>
 
 
 CrsfParser::CrsfParser() : _crc(0xd5)
@@ -18,12 +19,15 @@ void CrsfParser::parse_incoming_bytes()
     bool reprocess;
     do
     {
+        // std::cout << "aaa" << std::endl;
         reprocess = false;
         if (rx_buffer.size() > 1)
         {
+            // std::cout << "bbbbb" << std::endl;
             if (rx_buffer[0] == CRSF_SYNC_BYTE) {
                 uint8_t len = rx_buffer[1];
-
+                
+                // std::cout << "cccccc" << std::endl;
                 if (len < 3 || len > (CRSF_MAX_PAYLOAD_LEN + 2))
                 {
                     shift_left_rx_buffer_until_byte(CRSF_SYNC_BYTE);

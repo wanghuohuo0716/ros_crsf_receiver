@@ -1,27 +1,31 @@
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 project(crsf_receiver)
+#list(APPEND CMAKE_PREFIX_PATH "/usr/local")
+#list(APPEND CMAKE_MODULE_PATH "/usr/local/lib/cmake/CppLinuxSerial")
+# 设置 C++ 标准（ROS1 Melodic 默认支持 C++14，但可以手动指定更高版本）
+# set(CMAKE_CXX_STANDARD 14)  # ROS1 Melodic 默认不支持 C++20
+set(CMAKE_CXX_STANDARD_REQUIRED YES)
+set(CMAKE_CXX_EXTENSIONS NO)
 
-set_target_properties(${TARGET} PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED YES
-    CXX_EXTENSIONS NO
-)
-
+# 编译器警告选项
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra)
 endif()
 
+# 查找 ROS1 核心依赖
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  std_msgs
+  sensor_msgs
+  crsf_receiver_msg  # 你的消息包
+)
 
-find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(rclcpp_components REQUIRED)
-find_package(sensor_msgs REQUIRED)
-find_package(crsf_receiver_msg REQUIRED)
+# 查找第三方库（如 CppLinuxSerial）
 find_package(CppLinuxSerial REQUIRED)
 
-
-add_executable(crsf_receiver_node 
+# 添加可执行文件
+add_executable(crsf_receiver_node
   src/crsf_receiver_node.cpp
   src/crsf_receiver.cpp
   src/crsf_parser.cpp
@@ -29,15 +33,25 @@ add_executable(crsf_receiver_node
   src/utils.cpp
 )
 
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-
-target_link_libraries(crsf_receiver_node CppLinuxSerial)
-ament_target_dependencies(crsf_receiver_node crsf_receiver_msg rclcpp rclcpp_components std_msgs)
-
-install(TARGETS crsf_receiver_node 
-  DESTINATION lib/${PROJECT_NAME} 
+# 包含头文件目录
+include_directories(
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${catkin_INCLUDE_DIRS}
+  ${CppLinuxSerial_INCLUDE_DIRS}
 )
 
+# 链接库
+target_link_libraries(crsf_receiver_node
+  ${catkin_LIBRARIES}
+  CppLinuxSerial::CppLinuxSerial  # 使用命名空间目标
+)
 
-ament_package()
+# 安装规则（ROS1 使用 CATKIN_PACKAGE_BIN_DESTINATION）
+install(TARGETS crsf_receiver_node
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+# 生成 catkin 包
+catkin_package(
+  CATKIN_DEPENDS roscpp std_msgs sensor_msgs crsf_receiver_msg
+)

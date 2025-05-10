@@ -1,68 +1,64 @@
 #include "crsf_receiver.h"
+#include <ros/ros.h>
+#include <std_msgs/String.h>
 
-
-CrsfReceiverNode::CrsfReceiverNode(): Node("crsf_reader_node")
+CrsfReceiverNode::CrsfReceiverNode(ros::NodeHandle& )
 {
-    this->declare_parameter("device", "/dev/serial0");
-    this->declare_parameter("baudrate", CRSF_BAUDRATE);
-    this->declare_parameter("link_stats", true);
-    this->declare_parameter("receiver_rate", 100);
+    nh_.param<std::string>("device", device_, "/dev/ttyUSB0");
+    nh_.param<int>("baudrate", baudrate_, CRSF_BAUDRATE);
+    nh_.param<bool>("link_stats", link_stats_, true);
+    nh_.param<int>("receiver_rate", receiver_rate_, 100);
 
-    channels_publisher = this->create_publisher<crsf_receiver_msg::msg::CRSFChannels16>(
-        "rc/channels", 
-        rclcpp::QoS(1).best_effort().durability_volatile()
-    );
-
-    link_publisher = this->create_publisher<crsf_receiver_msg::msg::CRSFLinkInfo>(
-        "rc/link", 
-        rclcpp::QoS(1).best_effort().durability_volatile()
-    );
-
-    device = this->get_parameter("device").as_string();
-    int baudrate = this->get_parameter("baudrate").as_int();
-    int rate = this->get_parameter("receiver_rate").as_int();
-    int period = 1000 / rate;
-
-    RCLCPP_INFO(this->get_logger(), "Receiver rate is %dhz (period %dms)", rate, period);
-    RCLCPP_INFO(this->get_logger(), "Target serial device is: %s", device.c_str());
-    RCLCPP_INFO(this->get_logger(), "Selected baudrate: %d", baudrate);
-
-    timer_ = this->create_wall_timer(
-        std::chrono::milliseconds(period), 
-        std::bind(&CrsfReceiverNode::main_timer_callback, this)
-    );
+    channels_pub_ = nh_.advertise<crsf_receiver_msg::CRSFChannels16>("rc/channels", 1);
+    link_pub_ = nh_.advertise<crsf_receiver_msg::CRSFLinkInfo>("rc/link", 1);
     
-    serial.SetDevice(device);
-    serial.SetBaudRate(baudrate);
+    nh_.param<std::string>("device", device_, "/dev/ttyUSB0");
+    nh_.param<int>("baudrate", baudrate_, 115200);  // 替代 CRSF_BAUDRATE 宏
+    nh_.param<int>("receiver_rate", receiver_rate_, 100);
+    int period = 1000 / receiver_rate_;
+
+    ROS_INFO("Receiver receiver_rate is %dhz (period %dms)", receiver_rate_, period);
+    ROS_INFO("Target serial device is: %s", device_.c_str());
+    ROS_INFO("Selected baudrate: %d", baudrate_);
+
+    timer_ = nh_.createTimer(
+        ros::Duration(period / 1000.0),  // period 单位需转为秒
+        &CrsfReceiverNode::mainTimerCallback, 
+        this
+    );
+
+    serial.SetDevice(device_);
+    serial.SetBaudRate(baudrate_);
     serial.SetTimeout(period / 2);
 }
 
-void CrsfReceiverNode::main_timer_callback()
+void CrsfReceiverNode::mainTimerCallback(const ros::TimerEvent&)
 {
-    if(serial.GetState() == CppLinuxSerial::State::CLOSED) {
+    if (serial.GetState() == CppLinuxSerial::State::CLOSED) {
         try {
             serial.Open();
-            
-        } catch(const CppLinuxSerial::Exception& e) {
-            RCLCPP_WARN(this->get_logger(), "Can not open serial port: %s", device.c_str());
+        } catch (const CppLinuxSerial::Exception& e) {
+            ROS_WARN("Cannot open serial port: %s", device_.c_str());
             return;
         }
     }
 
-    if(serial.Available())
-    {
+    if (serial.Available()) {
         serial.ReadBinary(parser.rx_buffer);
         parser.parse_incoming_bytes();
+        
     }
 
-    if(parser.is_channels_actual()) {
+    if (parser.is_channels_actual()) {
+
         CRSFChannels16 message = convert_to_channels_message(parser.get_channels_values());
-        channels_publisher->publish(message);
+        channels_pub_.publish(message);
     }
 
-    if(parser.is_link_statistics_actual()) {
+    if (parser.is_link_statistics_actual()) {
+
         CRSFLinkInfo message = convert_to_link_info(parser.get_link_info());
-        link_publisher->publish(message);
+        link_pub_.publish(message);
     }
 }
 

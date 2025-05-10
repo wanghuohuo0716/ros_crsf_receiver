@@ -1,21 +1,20 @@
 <?xml version="1.0"?>
-<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
-<package format="3">
+<package format="2">  <!-- ROS1 使用 format="2" -->
   <name>crsf_receiver</name>
   <version>0.0.1</version>
-  <description>ROS 2 package for receiving CRSF (RC channels values) packets over serial port (UART).</description>
+  <description>ROS1 package for receiving CRSF (RC channels values) packets over serial port (UART).</description>
   <maintainer email="mhyhre@gmail.com">Andrey T</maintainer>
   <license>MIT</license>
 
-  <buildtool_depend>ament_cmake</buildtool_depend>
-  
-  <depend>rclcpp</depend>
-  <depend>crsf_receiver_msg</depend>
+  <!-- ROS1 核心构建工具 -->
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>sensor_msgs</depend>  <!-- 添加这一行 -->
 
-  <test_depend>ament_lint_auto</test_depend>
-  <test_depend>ament_lint_common</test_depend>
+  <!-- ROS1 运行时依赖 -->
+  <depend>roscpp</depend>          <!-- 替换 rclcpp -->
+  <depend>crsf_receiver_msg</depend>  <!-- 你的消息包 -->
+  <depend>std_msgs</depend>        <!-- 通常需要标准消息 -->
 
-  <export>
-    <build_type>ament_cmake</build_type>
-  </export>
+  <!-- ROS1 测试依赖（可选） -->
+  <test_depend>rostest</test_depend>
 </package>

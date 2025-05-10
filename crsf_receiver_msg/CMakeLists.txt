@@ -12,18 +12,23 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-
-find_package(ament_cmake REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(builtin_interfaces REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
-
-
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/CRSFChannels16.msg"
-  "msg/CRSFLinkInfo.msg"
-  DEPENDENCIES builtin_interfaces std_msgs
+find_package(catkin REQUIRED COMPONENTS
+  message_generation
+  std_msgs
+  roscpp
 )
 
-ament_package()
+add_message_files(
+  FILES
+  CRSFChannels16.msg
+  CRSFLinkInfo.msg
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
+
+catkin_package(
+  CATKIN_DEPENDS message_runtime std_msgs roscpp
+)

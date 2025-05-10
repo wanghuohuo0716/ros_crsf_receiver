@@ -5,10 +5,10 @@
 #include <algorithm>
 
 #include "crsf_structs.h"
-#include "crsf_receiver_msg/msg/crsf_channels16.hpp"
-#include "crsf_receiver_msg/msg/crsf_link_info.hpp"
+#include "crsf_receiver_msg/CRSFChannels16.h"
+#include "crsf_receiver_msg/CRSFLinkInfo.h"
 
-using namespace crsf_receiver_msg::msg;
+using namespace crsf_receiver_msg;
 
 
 clock_t millis(std::chrono::time_point<std::chrono::high_resolution_clock> start_time);

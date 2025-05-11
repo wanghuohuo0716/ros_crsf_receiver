@@ -132,6 +132,7 @@ rostopic echo /rc/link
 rostopic hz /rc/channels
 ```
 
+CRSF sets the **midpoint value of the RC channels to [997](https://github.com/crsf-wg/crsf/wiki/CRSF_FRAMETYPE_RC_CHANNELS_PACKED)** for [specific reasons](https://www.expresslrs.org/software/switch-config/#hybrid-and-wide-switch-configuration-modes). It is recommended **NOT** to modify this default midpoint setting in the driver. Instead, perform any necessary value conversion in your own control code.
 
 
 ## 3.4 Link statistics message fields:
@@ -176,18 +177,6 @@ However, note that according to ExpressLRS specifications, [channels 15 and 16 a
 ![realrate](./pictures/realrate.png)
 
 Note: When configuring the packet rate and channel settings, you may encounter the warning “error not while connected.” This happens because ELRS does not allow changing these parameters while the receiver is connected. Simply power off the receiver before applying the settings.
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # 5.THANKS

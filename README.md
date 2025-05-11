@@ -132,7 +132,7 @@ rostopic echo /rc/link
 rostopic hz /rc/channels
 ```
 
-CRSF sets the **midpoint value of the RC channels to [997](https://github.com/crsf-wg/crsf/wiki/CRSF_FRAMETYPE_RC_CHANNELS_PACKED)** for [specific reasons](https://www.expresslrs.org/software/switch-config/#hybrid-and-wide-switch-configuration-modes). It is recommended **NOT** to modify this default midpoint setting in the driver. Instead, perform any necessary value conversion in your own control code.
+CRSF sets the **midpoint value of the RC channels to [992](https://github.com/crsf-wg/crsf/wiki/CRSF_FRAMETYPE_RC_CHANNELS_PACKED)** for [specific reasons](https://www.expresslrs.org/software/switch-config/#hybrid-and-wide-switch-configuration-modes). It is recommended **NOT** to modify this default midpoint setting in the driver. Instead, perform any necessary value conversion in your own control code.
 
 
 ## 3.4 Link statistics message fields:
